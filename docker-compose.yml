@@ -1,0 +1,11 @@
+version: "2"
+
+services:
+  app:
+    container_name: react-ssr
+    image: react-ssr
+    command: bash -c "yarn && yarn webpack --mode=production && node ./dist/server.js"
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/var/www/app

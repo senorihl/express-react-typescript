@@ -1,0 +1,21 @@
+name: Docker testing
+on: [push]
+jobs:
+  raw:
+    runs-on: ubuntu-latest
+    name: Testing with docker
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          docker build --build-arg="DEV_UID=$(id -u)" -t react-ssr .
+          docker run -d -p "8080:8080" --name react-ssr react-ssr "yarn && yarn webpack --mode=production && node ./dist/server.js"
+          ./scripts/docker-testing.sh "docker container logs --tail=\"all\" --timestamps react-ssr" 30
+  composer:
+    runs-on: ubuntu-latest
+    name: Testing with docker-compose
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          docker build --build-arg="DEV_UID=$(id -u)" -t react-ssr .
+          docker-compose up -d
+          ./scripts/docker-testing.sh "docker-compose logs --tail=\"all\" --timestamps" 60
